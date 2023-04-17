@@ -1,23 +1,30 @@
-import { findByProps } from "@vendetta/metro"
-import { after } from "@vendetta/patcher"
-import { invites } from "@vendetta/metro/common"
-import { logger } from "@vendetta"
+import { findByProps, findByStoreName } from "@vendetta/metro";
+import { after } from "@vendetta/patcher";
+import { invites } from "@vendetta/metro/common";
 
-let patch: any
-const { updateGuildNotificationSettings } = findByProps('updateGuildNotificationSettings')
+const { updateGuildNotificationSettings } = findByProps("updateGuildNotificationSettings");
+const UserGuildSettingsStore = findByStoreName("UserGuildSettingsStore");
 
-function onLoad() {
-    patch = after("acceptInvite", invites, async (args, res) => {
+async function patch() {
+    const [isMuted, isEveryoneSupressed, isRolesSupressed] = [await UserGuildSettingsStore.isMuted(null), await UserGuildSettingsStore.isSuppressEveryoneEnabled(null), await UserGuildSettingsStore.isSuppressRolesEnabled(null)];
+    if (isMuted || isEveryoneSupressed || isRolesSupressed) {
+        updateGuildNotificationSettings(null, { "muted": false, "suppress_everyone": false, "suppress_roles": false });
+    }
+
+    after("acceptInvite", invites, async (args, res) => {
         const guildId = await res.then(x => {
-            return x.guild.id
-        })
-        updateGuildNotificationSettings(guildId, {'muted':true,'suppress_everyone':true,'suppress_roles':true})
-    })
+            return x.guild.id;
+        });
+        if (guildId === "@me" || guildId === "null" || guildId == null) return;
+        updateGuildNotificationSettings(guildId, { "muted": true, "suppress_everyone": true, "suppress_roles": true });
+    });
 }
 
 export default {
-    onLoad,
+    onLoad: () => {
+        patch();
+    },
     onUnload: () => {
-        patch()
+        patch();
     }
-}
+};
