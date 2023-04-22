@@ -14,7 +14,7 @@ storage.roles ??= true;
 let unpatch;
 
 export default {
-    onLoad: () => {
+    onLoad: async () => {
         const [isMuted, isEveryoneSupressed, isRolesSupressed] = [await UserGuildSettingsStore.isMuted(null), await UserGuildSettingsStore.isSuppressEveryoneEnabled(null), await UserGuildSettingsStore.isSuppressRolesEnabled(null)];
         if (isMuted || isEveryoneSupressed || isRolesSupressed) {
             updateGuildNotificationSettings(null, { "muted": false, "suppress_everyone": false, "suppress_roles": false });
