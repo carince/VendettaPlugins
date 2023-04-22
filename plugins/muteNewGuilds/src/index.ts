@@ -17,7 +17,7 @@ async function patch() {
         updateGuildNotificationSettings(null, { "muted": false, "suppress_everyone": false, "suppress_roles": false });
     }
 
-    after("acceptInvite", invites, async (args, res) => {
+    return after("acceptInvite", invites, async (args, res) => {
         const guildId = await res.then(x => {
             return x.guild.id;
         });

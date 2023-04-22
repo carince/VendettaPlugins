@@ -11,7 +11,7 @@ export default () => {
     return (
         <RN.ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 38 }}>
             <FormSwitchRow
-                label="Mute Server"
+                label="Suppress Guild"
                 value={storage["server"]}
                 onValueChange={(v: boolean) => storage["server"] = v}
             />
@@ -21,7 +21,7 @@ export default () => {
                 onValueChange={(v: boolean) => storage["everyone"] = v}
             />
             <FormSwitchRow
-                label="Suppress All Role @mentons"
+                label="Suppress All Role @mentions"
                 value={storage["roles"]}
                 onValueChange={(v: boolean) => storage["roles"] = v}
             />
